@@ -1,4 +1,3 @@
-
 import torch, nltk, pickle
 from torch import nn
 from collections import Counter
@@ -7,6 +6,10 @@ from transformers import BatchEncoding, PretrainedConfig, PreTrainedModel
 from torch.utils.data import DataLoader
 import numpy as np
 import sys, time, os
+try:
+    from datasets import load_dataset
+except Exception:
+    load_dataset = None
 
 ###
 ### Part 1. Tokenization.
@@ -29,6 +32,10 @@ def lowercase_tokenizer(text):
         words.append(current_word.lower())
     return words
 
+import nltk
+def nltk_lowercase_tokenizer(text):
+    return [t.lower() for t in nltk.word_tokenize(text)]
+
 def build_tokenizer(train_file, tokenize_fun=lowercase_tokenizer, max_voc_size=None, model_max_length=None,
                     pad_token='<PAD>', unk_token='<UNK>', bos_token='<BOS>', eos_token='<EOS>'):
     """ Build a tokenizer from the given file.
@@ -43,15 +50,17 @@ def build_tokenizer(train_file, tokenize_fun=lowercase_tokenizer, max_voc_size=N
              bos_token:         The dummy string corresponding to the beginning of the text.
              eos_token:         The dummy string corresponding to the end the text.
     """
-    # First count token frequencies in the training file
+    # First count token frequencies in the training file(s)
     counter = Counter()
-    
-    # Read and process training file
-    with open(train_file, 'r', encoding='utf-8') as f:
-        for line in f:
-            if line.strip():  # Skip empty lines
-                tokens = tokenize_fun(line.strip())
-                counter.update(tokens)
+    # Allow train_file to be a single path or a list/tuple of paths
+    files = train_file if isinstance(train_file, (list, tuple)) else [train_file]
+
+    for path in files:
+        with open(path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.strip():  # Skip empty lines
+                    tokens = tokenize_fun(line.strip())
+                    counter.update(tokens)
     
     # Create vocabulary with special tokens first
     str_to_int = {
@@ -61,12 +70,20 @@ def build_tokenizer(train_file, tokenize_fun=lowercase_tokenizer, max_voc_size=N
         unk_token: 3,  # Unknown token
     }
     
-    # Calculate how many regular tokens we can add
-    remaining_space = max_voc_size - len(str_to_int) if max_voc_size else float('inf')
-    
-    # Add most common tokens up to the vocabulary size limit
-    for token, _ in counter.most_common(int(remaining_space)):
-        if token not in str_to_int:  # Avoid adding special tokens again
+    # Calculate how many regular tokens we can add. If max_voc_size is None, include all tokens.
+    if max_voc_size is None:
+        # Add all tokens ordered by frequency
+        most_common_tokens = [t for t, _ in counter.most_common()]
+    else:
+        remaining_space = max_voc_size - len(str_to_int)
+        if remaining_space > 0:
+            most_common_tokens = [t for t, _ in counter.most_common(remaining_space)]
+        else:
+            most_common_tokens = []
+
+    # Add the selected tokens (skip tokens that collide with special tokens)
+    for token in most_common_tokens:
+        if token not in str_to_int:
             str_to_int[token] = len(str_to_int)
     
     # Create reverse mapping
@@ -116,60 +133,78 @@ class A1Tokenizer:
         """Tokenize the given texts and return a BatchEncoding containing the integer-encoded tokens."""
         if return_tensors and return_tensors != 'pt':
             raise ValueError('Should be pt')
+        # Accept either:
+        # - texts: list[str] -> batch of strings (each string is one sample)
+        # - texts: list[list[str]] -> batch where each sample is a list of strings to be concatenated
+        if isinstance(texts, str):
+            texts = [texts]
 
-        # Ensure texts is a list of strings
-        if isinstance(texts[0], str):
-            texts = [texts]  # Make it a batch of 1 if single text list provided
-        
-        # Tokenize and convert to IDs
+        if len(texts) == 0:
+            return BatchEncoding({'input_ids': []})
+
+        # Determine whether each element is a str (single sample) or list (concatenation of pieces)
+        is_batch_of_lists = isinstance(texts[0], (list, tuple))
+
+        batch_samples = []
+        if is_batch_of_lists:
+            batch_samples = texts
+        else:
+            # list[str]
+            batch_samples = [[t] for t in texts]
+
+        # Tokenize and convert to IDs per sample
         encoded_texts = []
-        for text_list in texts:
-            sequence = []
-            for text in text_list:
-                # Add BOS token
-                tokens = [self.bos_token_id]
-                # Tokenize and convert to IDs
-                for token in self.tokenize_fun(text):
-                    token_id = self.str_to_int.get(token, self.unk_token_id)
+        orig_lengths = []
+        for sample_texts in batch_samples:
+            # sample_texts is a list of strings to concatenate for this sample
+            tokens = [self.bos_token_id]
+            for text in sample_texts:
+                for tok in self.tokenize_fun(text):
+                    token_id = self.str_to_int.get(tok, self.unk_token_id)
                     tokens.append(token_id)
-                # Add EOS token
-                tokens.append(self.eos_token_id)
-                
-                # Truncate if needed
-                if truncation and self.model_max_length:
-                    tokens = tokens[:self.model_max_length]
-                
-                sequence.extend(tokens)
-            encoded_texts.append(sequence)
+            tokens.append(self.eos_token_id)
 
-        # Find maximum sequence length for padding
-        if padding:
-            max_len = max(len(seq) for seq in encoded_texts)
-            # Pad sequences
-            for i in range(len(encoded_texts)):
-                padding_length = max_len - len(encoded_texts[i])
-                if padding_length > 0:
-                    encoded_texts[i].extend([self.pad_token_id] * padding_length)
-        
-        # Create attention mask if needed
+            # We'll apply truncation at the sample (sequence) level if requested
+            if truncation and self.model_max_length is not None:
+                tokens = tokens[:self.model_max_length]
+
+            encoded_texts.append(tokens)
+            orig_lengths.append(len(tokens))
+
+        # Padding: if requested (or requested tensor output with variable lengths), pad to max length
         attention_mask = None
-        if padding:
-            attention_mask = [[1] * len(seq) for seq in encoded_texts]
-            for i, seq in enumerate(attention_mask):
-                padding_length = max_len - len(seq)
-                if padding_length > 0:
-                    attention_mask[i].extend([0] * padding_length)
-        
+        if padding or (return_tensors == 'pt' and len(set(orig_lengths)) > 1):
+            max_len = max(orig_lengths)
+            padded = []
+            attention_mask = []
+            for seq, L in zip(encoded_texts, orig_lengths):
+                pad_len = max_len - L
+                if pad_len > 0:
+                    padded_seq = seq + [self.pad_token_id] * pad_len
+                else:
+                    padded_seq = seq
+                padded.append(padded_seq)
+                attention_mask.append([1] * L + [0] * (max_len - L))
+            encoded_texts = padded
+
         # Convert to tensors if requested
         if return_tensors == 'pt':
-            encoded_texts = torch.tensor(encoded_texts)
+            if len(encoded_texts) == 0:
+                input_ids = torch.empty((0, 0), dtype=torch.long)
+            else:
+                input_ids = torch.tensor(encoded_texts, dtype=torch.long)
             if attention_mask is not None:
-                attention_mask = torch.tensor(attention_mask)
-        
+                attention_mask = torch.tensor(attention_mask, dtype=torch.long)
+
+            result = {'input_ids': input_ids}
+            if attention_mask is not None:
+                result['attention_mask'] = attention_mask
+            return BatchEncoding(result)
+
+        # Return Python lists if tensors not requested
         result = {'input_ids': encoded_texts}
         if attention_mask is not None:
             result['attention_mask'] = attention_mask
-            
         return BatchEncoding(result)
 
     def __len__(self):
@@ -186,6 +221,96 @@ class A1Tokenizer:
         """Load a tokenizer from the given file."""
         with open(filename, 'rb') as f:
             return pickle.load(f)
+
+
+###
+### Part 2. Loading texts and creating batches
+###
+
+def load_text_datasets(train_file, val_file):
+    """Load train/val text files using the HuggingFace `datasets` library.
+
+    This returns a dataset dict with keys 'train' and 'val', where each element
+    is a dict with key 'text'. Empty lines are automatically filtered out.
+
+    Args:
+        train_file: path to training text file
+        val_file: path to validation text file
+    Returns:
+        dataset: a DatasetDict (or None if `datasets` not available)
+    """
+    if load_dataset is None:
+        raise RuntimeError('datasets library is not available in the environment')
+
+    dataset = load_dataset('text', data_files={'train': train_file, 'val': val_file})
+    # Filter out empty lines
+    dataset = dataset.filter(lambda x: x['text'].strip() != '')
+    return dataset
+
+
+def subsample_dataset(dataset, n=1000):
+    """Optionally reduce dataset size for faster development.
+
+    Returns a shallow-wrapped dataset where each split is a torch.utils.data.Subset
+    containing at most `n` items.
+    """
+    from torch.utils.data import Subset
+    for sec in ['train', 'val']:
+        size = len(dataset[sec])
+        k = min(n, size)
+        dataset[sec] = Subset(dataset[sec], range(k))
+    return dataset
+
+
+def collate_fn_tokenizer(batch, tokenizer, truncation=True, padding=True, return_tensors='pt'):
+    """Collate function for DataLoader that tokenizes a list of dataset examples.
+
+    `batch` is a list of dataset examples (dictionaries) that must contain the key 'text'.
+    The function returns a BatchEncoding (matching HuggingFace style) where tensors are
+    returned when return_tensors='pt'.
+    """
+    texts = [ex['text'] for ex in batch]
+    # tokenizer will handle padding/truncation and return tensors if requested
+    return tokenizer(texts, truncation=truncation, padding=padding, return_tensors=return_tensors)
+
+
+def make_dataloader(dataset_split, tokenizer, batch_size=8, shuffle=True, num_workers=0, truncation=True, padding=True):
+    """Create a PyTorch DataLoader from a dataset split.
+
+    Args:
+        dataset_split: a dataset split object (e.g., dataset['train'])
+        tokenizer: an A1Tokenizer instance
+        batch_size: batch size
+        shuffle: whether to shuffle examples (useful for training)
+        num_workers: DataLoader workers
+    Returns:
+        DataLoader that yields BatchEncoding objects
+    """
+    return DataLoader(dataset_split,
+                      batch_size=batch_size,
+                      shuffle=shuffle,
+                      num_workers=num_workers,
+                      collate_fn=lambda b: collate_fn_tokenizer(b, tokenizer, truncation=truncation, padding=padding, return_tensors='pt'))
+
+
+def create_dataloaders(train_file, val_file, tokenizer, train_batch=16, eval_batch=32, subsample=None, num_workers=0):
+    """Helper that loads datasets from files and returns train/val DataLoaders.
+
+    Args:
+        train_file, val_file: paths
+        tokenizer: an A1Tokenizer instance
+        train_batch, eval_batch: batch sizes
+        subsample: if int, reduce both splits to at most this many examples for quick dev
+    Returns:
+        train_loader, val_loader
+    """
+    ds = load_text_datasets(train_file, val_file)
+    if subsample is not None:
+        ds = subsample_dataset(ds, subsample)
+
+    train_loader = make_dataloader(ds['train'], tokenizer, batch_size=train_batch, shuffle=True, num_workers=num_workers)
+    val_loader = make_dataloader(ds['val'], tokenizer, batch_size=eval_batch, shuffle=False, num_workers=num_workers)
+    return train_loader, val_loader
    
 
 ###
@@ -206,9 +331,18 @@ class A1RNNModel(PreTrainedModel):
     
     def __init__(self, config):
         super().__init__(config)
-        self.embedding = ...
-        self.rnn = ...
-        self.unembedding = ...
+        # Initialize layers using hyperparameters from config
+        assert config.vocab_size is not None, 'config.vocab_size must be set'
+        assert config.embedding_size is not None, 'config.embedding_size must be set'
+        assert config.hidden_size is not None, 'config.hidden_size must be set'
+
+        self.embedding = nn.Embedding(config.vocab_size, config.embedding_size)
+        # Use LSTM as recommended; batch_first=True so inputs are (batch, seq, features)
+        self.rnn = nn.LSTM(input_size=config.embedding_size,
+                           hidden_size=config.hidden_size,
+                           batch_first=True)
+        # Linear layer to map RNN hidden states to vocabulary logits
+        self.unembedding = nn.Linear(config.hidden_size, config.vocab_size)
         
     def forward(self, X):
         """The forward pass of the RNN-based language model.
@@ -218,9 +352,13 @@ class A1RNNModel(PreTrainedModel):
            Returns:
              The output tensor (3D), consisting of logits for all token positions for all vocabulary items.
         """
-        embedded = ...
-        rnn_out, _ = ...
-        out = ...
+        # X is expected to be shape (batch_size, seq_len) with dtype long
+        if X.dtype != torch.long and X.dtype != torch.int:
+            X = X.long()
+
+        embedded = self.embedding(X)                    # (B, T, E)
+        rnn_out, _ = self.rnn(embedded)                 # rnn_out: (B, T, H)
+        out = self.unembedding(rnn_out)                 # (B, T, V)
         return out
 
 
@@ -289,31 +427,120 @@ class A1Trainer:
 
         # TODO: Relevant arguments: at least args.learning_rate, but you can optionally also consider
         # other Adam-related hyperparameters here.
-        optimizer = torch.optim.AdamW(...)
+        optimizer = torch.optim.AdamW(self.model.parameters(), lr=getattr(args, 'learning_rate', 1e-3))
 
-        # TODO: Relevant arguments: args.per_device_train_batch_size, args.per_device_eval_batch_size
-        train_loader = DataLoader(...)
-        val_loader = DataLoader(...)
+        # Create DataLoaders using helper from Part 2. Expect that self.train_dataset and self.eval_dataset
+        # are iterable datasets returning dicts with key 'text'. Use tokenizer to collate.
+        train_batch = getattr(args, 'per_device_train_batch_size', 8)
+        eval_batch = getattr(args, 'per_device_eval_batch_size', 8)
+
+        train_loader = make_dataloader(self.train_dataset, self.tokenizer, batch_size=train_batch, shuffle=True, num_workers=getattr(args, 'dataloader_num_workers', 0))
+        val_loader = make_dataloader(self.eval_dataset, self.tokenizer, batch_size=eval_batch, shuffle=False, num_workers=getattr(args, 'dataloader_num_workers', 0))
         
-        # TODO: Your work here is to implement the training loop.
-        #       
-        # for each training epoch (use args.num_train_epochs here):
-        #   for each batch B in the training set:
-        #
-        #       PREPROCESSING AND FORWARD PASS:
-        #       input_ids = apply your tokenizer to B
-	    #       X = all columns in input_ids except the last one
-	    #       Y = all columns in input_ids except the first one
-	    #       put X and Y onto the GPU (or whatever device you use)
-        #       apply the model to X
-        #   	compute the loss for the model output and Y
-        #
-        #       BACKWARD PASS AND MODEL UPDATE:
-        #       optimizer.zero_grad()
-        #       loss.backward()
-        #       optimizer.step()
+        # Implement training loop
+        num_epochs = getattr(args, 'num_train_epochs', 1)
+        for epoch in range(num_epochs):
+            self.model.train()
+            running_loss = 0.0
+            n_tokens = 0
+            for batch in train_loader:
+                # batch is a BatchEncoding produced by our collate_fn: contains 'input_ids' and 'attention_mask'
+                input_ids = batch['input_ids']
+                if isinstance(input_ids, torch.Tensor) is False:
+                    # If collate returned lists (unlikely), convert to tensor
+                    input_ids = torch.tensor(input_ids, dtype=torch.long)
+
+                # Shifted language modeling: predict next token
+                X = input_ids[:, :-1].to(device)
+                Y = input_ids[:, 1:].to(device)
+
+                logits = self.model(X)  # (B, T-1, V)
+
+                V = logits.size(-1)
+                logits_flat = logits.reshape(-1, V)
+                targets_flat = Y.reshape(-1)
+
+                loss = loss_func(logits_flat, targets_flat)
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                batch_tokens = (targets_flat != self.tokenizer.pad_token_id).sum().item()
+                running_loss += loss.item() * batch_tokens
+                n_tokens += batch_tokens
+
+            avg_loss = running_loss / max(1, n_tokens)
+            print(f'Epoch {epoch+1}/{num_epochs} training loss per token: {avg_loss:.6f}')
+
+            # Evaluation after each epoch if requested
+            if getattr(args, 'eval_strategy', None) == 'epoch':
+                self.model.eval()
+                val_loss_acc = 0.0
+                val_tokens = 0
+                with torch.no_grad():
+                    for vb in val_loader:
+                        v_input_ids = vb['input_ids']
+                        if isinstance(v_input_ids, torch.Tensor) is False:
+                            v_input_ids = torch.tensor(v_input_ids, dtype=torch.long)
+                        VX = v_input_ids[:, :-1].to(device)
+                        VY = v_input_ids[:, 1:].to(device)
+                        v_logits = self.model(VX)
+                        V = v_logits.size(-1)
+                        v_logits_flat = v_logits.reshape(-1, V)
+                        v_targets_flat = VY.reshape(-1)
+                        v_loss = loss_func(v_logits_flat, v_targets_flat)
+                        n_tok = (v_targets_flat != self.tokenizer.pad_token_id).sum().item()
+                        val_loss_acc += v_loss.item() * n_tok
+                        val_tokens += n_tok
+
+                val_avg = val_loss_acc / max(1, val_tokens)
+                print(f'Validation loss per token: {val_avg:.6f}')
 
         print(f'Saving to {args.output_dir}.')
+        os.makedirs(args.output_dir, exist_ok=True)
         self.model.save_pretrained(args.output_dir)
 
-    
+#############################################
+# Optional analysis utilities (was previously executed at import time).
+# Wrapped in a main guard so training/importing this module does NOT require
+# matplotlib or pre-saved model artifacts. Run manually if you need them.
+#############################################
+if __name__ == '__main__' and False:  # Set to True to enable manual embedding analysis
+    import numpy as np
+    from sklearn.metrics.pairwise import cosine_similarity
+    from sklearn.decomposition import PCA
+    import matplotlib.pyplot as plt
+
+    # Example: load tokenizer & model (adjust paths as needed)
+    example_tokenizer = build_tokenizer('train.txt', max_voc_size=5000, model_max_length=128)
+    example_model = A1RNNModel.from_pretrained('./a1_model_out_smoke')
+    emb = example_model.embedding.weight.detach().cpu().numpy()  # (V, D)
+
+    def nearest_neighbors(word, topk=10):
+        if word not in example_tokenizer.str_to_int:
+            print('word not in vocab:', word)
+            return []
+        idx = example_tokenizer.str_to_int[word]
+        vec = emb[idx:idx+1]
+        sims = cosine_similarity(vec, emb)[0]
+        nn_ids = sims.argsort()[::-1][:topk]
+        inv = example_tokenizer.int_to_str
+        return [(inv[i], float(sims[i])) for i in nn_ids]
+
+    # Simple PCA plot (optional)
+    def plot_pca(sample_size=200):
+        vocab_size = emb.shape[0]
+        take = min(sample_size, vocab_size)
+        sub = emb[:take]
+        pca = PCA(n_components=2)
+        pts = pca.fit_transform(sub)
+        plt.scatter(pts[:,0], pts[:,1], s=5)
+        plt.title('Embedding PCA (first {} tokens)'.format(take))
+        plt.show()
+
+    # Example usage
+    print(nearest_neighbors('the'))
+    # plot_pca()
+
+
