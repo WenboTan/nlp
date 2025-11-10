@@ -1,50 +1,59 @@
 #!/bin/bash
-#SBATCH --job-name=a1_full
-#SBATCH --gres=gpu:L4:1
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=32G
-#SBATCH --time=00:30:00
-#SBATCH --partition=short
+#SBATCH --job-name=a1_rnnlm_5ep
+#SBATCH --partition=long
 #SBATCH --account=student
+#SBATCH --time=02:00:00
+#SBATCH --gres=gpu:1                 # 如果你确定是 L4，可写成: --gres=gpu:L4:1
+#SBATCH --gpus-per-task=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=16G                    # batch=4 + hidden=128 足够；不够可以提到 32G
 #SBATCH --output=%x-%j.out
 
-# Initialize/activate conda environment (robust to missing `module` on compute nodes)
-# We try common conda locations first, then fall back to `conda` in PATH.
-if [ -f "/opt/conda/etc/profile.d/conda.sh" ]; then
-  . /opt/conda/etc/profile.d/conda.sh
-elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
-  . "$HOME/miniconda3/etc/profile.d/conda.sh"
-elif command -v conda >/dev/null 2>&1; then
-  # Initialize conda for this shell session
-  eval "$(conda shell.bash hook 2>/dev/null || true)"
-else
-  echo "WARNING: conda not found. Ensure conda is available on the node or use a module to load it." >&2
-fi
+# Use dat450 environment's Python directly (bypasses conda activate issues in SLURM)
+PYTHON=/data/users/wenbota/miniconda3/envs/dat450/bin/python
 
-# Activate the environment we will create from conda-forge only
-conda activate dat450
+# 2) Non-interactive & cache (避免权限问题)
+export PYTHONUNBUFFERED=1
 export MPLBACKEND=Agg
-echo "[Diag] Python: $(python -V)"
-python - <<'PY'
-import torch, nltk, matplotlib
-print('[Diag] torch', torch.__version__, 'cuda_available=', torch.cuda.is_available())
-if torch.cuda.is_available():
-  try:
-    print('[Diag] device:', torch.cuda.get_device_name(0))
-  except Exception as e:
-    print('[Diag] device query error:', e)
-print('[Diag] nltk', nltk.__version__, 'matplotlib', matplotlib.__version__)
-PY
-cd /data/users/wenbota/nlp/assigment/1/a1
+export HF_HOME=$HOME/.cache/huggingface
+export HF_DATASETS_CACHE=$HF_HOME/datasets
+export TRANSFORMERS_CACHE=$HF_HOME/transformers
+export NLTK_DATA=$HOME/.cache/nltk
 
-# Run training; adjust args if you want different hyperparameters
-python3 train_full.py \
-  --epochs 3 \
-  --train_batch 64 \
-  --eval_batch 64 \
-  --lr 5e-4 \
-  --max_voc_size 20000 \
-  --model_max_length 128 \
-  --embedding_size 256 \
-  --hidden_size 512 \
-  --output_dir ./a1_model_full
+# 3) Quick diagnostic (check if torch available)
+echo "[Diag] Python: $($PYTHON -V)"
+$PYTHON -c "import torch; print('[Diag] torch', torch.__version__, 'cuda=', torch.cuda.is_available())" || echo "[Warning] torch check failed"
+
+# 4) Paths
+PROJECT_DIR="/data/users/wenbota/nlp/assigment/1/a1"
+TRAIN_FILE="/data/courses/2025_dat450_dit247/assignments/a1/train.txt"
+VAL_FILE="/data/courses/2025_dat450_dit247/assignments/a1/val.txt"
+OUTPUT_DIR="${PROJECT_DIR}/a1_model_lr2e-3_b4_h128_e5"
+
+cd "$PROJECT_DIR"
+
+# 5) Hyperparameters (teacher's suggestion as defaults)
+EPOCHS=5                 # 训练5个epochs获得更好效果
+LR=2e-3                  # 如果 loss 抖或上升，试 1e-3 或 5e-4
+TRAIN_BS=4               # 老师建议的 batch
+EVAL_BS=4
+EMB=128
+HID=128
+MAX_VOC=20000
+MAXLEN=128
+
+# 6) Run - 使用 dat450 环境的 Python
+$PYTHON train_full.py \
+  --train_file "$TRAIN_FILE" \
+  --val_file "$VAL_FILE" \
+  --epochs "$EPOCHS" \
+  --train_batch "$TRAIN_BS" \
+  --eval_batch "$EVAL_BS" \
+  --lr "$LR" \
+  --max_voc_size "$MAX_VOC" \
+  --model_max_length "$MAXLEN" \
+  --embedding_size "$EMB" \
+  --hidden_size "$HID" \
+  --output_dir "$OUTPUT_DIR" \
+  --save_tokenizer a1_tokenizer.pkl

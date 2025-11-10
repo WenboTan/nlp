@@ -1,96 +1,36 @@
-================================================================================
-A1 ASSIGNMENT - FINAL RESULTS
-================================================================================
+Assignment 1: RNN Language Model — Output
+Student: Wenbota Tan
+Date: November 10, 2025
 
-TRAINING CONFIGURATION
---------------------------------------------------------------------------------
-Model Architecture: LSTM-based Language Model
-  - Embedding size: 256
-  - Hidden size: 512
-  - Vocabulary size: 20,000
-  - Max sequence length: 128
+Validation results
+Validation NLL: 4.6006
+Validation Perplexity: 99.54
 
-Training Setup:
-  - Optimizer: AdamW
-  - Learning rate: 5e-4
-  - Batch size: 64
-  - Number of epochs: 3
-  - Hardware: NVIDIA L4 GPU
-  - PyTorch version: 2.5.1 + CUDA 12.1
+Next-word predictions
 
-Training Progress:
-  Epoch 1/3: Train loss 5.692, Val loss 5.223
-  Epoch 2/3: Train loss 5.063, Val loss 4.915
-  Epoch 3/3: Train loss 4.777, Val loss 4.753
-
-================================================================================
-VALIDATION SET PERPLEXITY (REQUIRED OUTPUT)
-================================================================================
-
-Validation Loss (per token): 4.753313
-Validation Perplexity: 115.9679
-
-The model achieves a perplexity of approximately 116 on the validation set,
-indicating reasonable language modeling performance. The perplexity decreased
-from 184.7 (epoch 1) to 115.97 (epoch 3), showing continued improvement.
-
-================================================================================
-NEXT-WORD PREDICTIONS (REQUIRED OUTPUT)
-================================================================================
-
-Test Prompt 1: "The president of the"
+Prompt: "The president of the United"
 Top 5 predictions:
-  1. was                  (probability: 0.1298)
-  2. is                   (probability: 0.1108)
-  3. ,                    (probability: 0.0481)
-  4. and                  (probability: 0.0224)
-  5. has                  (probability: 0.0222)
+  states               probability = 0.711459
+  nations              probability = 0.173760
+  kingdom              probability = 0.048082
+  state                probability = 0.005690
+  federal              probability = 0.003536
 
-Test Prompt 2: "In the year"
+Prompt: "The largest city in"
 Top 5 predictions:
-  1. ,                    (probability: 0.1480)
-  2. <UNK>                (probability: 0.1019)
-  3. the                  (probability: 0.0684)
-  4. "                    (probability: 0.0456)
-  5. and                  (probability: 0.0115)
+  the                  probability = 0.365843
+  <UNK>                probability = 0.044537
+  europe               probability = 0.014300
+  a                    probability = 0.011545
+  columbus             probability = 0.010953
 
-Test Prompt 3: "The capital of"
+Prompt: "She is a very good"
 Top 5 predictions:
-  1. is                   (probability: 0.0836)
-  2. was                  (probability: 0.0662)
-  3. <UNK>                (probability: 0.0438)
-  4. ,                    (probability: 0.0416)
-  5. <EOS>                (probability: 0.0409)
+  relationship         probability = 0.040612
+  woman                probability = 0.038162
+  ,                    probability = 0.036529
+  <UNK>                probability = 0.033776
+  example              probability = 0.033533
 
-Test Prompt 4: "Scientists have discovered"
-Top 5 predictions:
-  1. <UNK>                (probability: 0.1299)
-  2. ,                    (probability: 0.0422)
-  3. and                  (probability: 0.0321)
-  4. to                   (probability: 0.0287)
-  5. for                  (probability: 0.0249)
-
-Test Prompt 5: "The most important thing is"
-Top 5 predictions:
-  1. ,                    (probability: 0.2312)
-  2. to                   (probability: 0.0700)
-  3. <UNK>                (probability: 0.0616)
-  4. and                  (probability: 0.0584)
-  5. (                    (probability: 0.0565)
-
-================================================================================
-OBSERVATIONS
-================================================================================
-
-The model shows reasonable next-word prediction capabilities:
-- Correctly predicts grammatical continuations (e.g., "is", "was" after nouns)
-- Handles common phrases appropriately
-- Shows uncertainty with <UNK> tokens when context is ambiguous
-- Predicts punctuation when grammatically appropriate
-
-Training completed successfully on NVIDIA L4 GPU.
-Total training time: approximately 13 minutes for 3 epochs.
-
-================================================================================
-END OF OUTPUT
-================================================================================
+Summary
+The model was trained for five epochs and achieves a validation negative log-likelihood of 4.6006 and a validation perplexity of 99.54. It demonstrates solid contextual understanding by correctly predicting "states" after "The president of the United" with high confidence, offers sensible geographical completions for location prompts, and produces grammatically plausible continuations for adjective–noun phrases. These results indicate the model has learned meaningful language patterns while still reflecting vocabulary limits for rarer proper nouns.

@@ -1,3 +1,0 @@
-This is a test.
-Another test with more words.
-Let's see how it handles contractions!
