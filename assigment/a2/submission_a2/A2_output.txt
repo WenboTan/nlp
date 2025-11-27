@@ -1,0 +1,238 @@
+================================================================================
+Assignment 2 - Transformer Language Model
+Complete Implementation and Results
+================================================================================
+
+TRAINING RESULTS
+--------------------------------------------------------------------------------
+Model Configuration:
+- Architecture: Transformer (OLMo 2 style)
+- Hidden size: 256
+- Number of layers: 4
+- Number of attention heads: 4
+- Vocabulary size: 20,000
+- Total parameters: 9,317,120
+
+Training Progress:
+[Epoch 1/5] Train NLL=5.1585 PPL=173.91  (287.7s)
+           Valid NLL=4.6160 PPL=101.09
+[Epoch 2/5] Train NLL=4.4213 PPL=83.21   (279.6s)
+           Valid NLL=4.3390 PPL=76.63
+[Epoch 3/5] Train NLL=4.1568 PPL=63.87   (276.4s)
+           Valid NLL=4.2117 PPL=67.47
+[Epoch 4/5] Train NLL=3.9961 PPL=54.38   (239.8s)
+           Valid NLL=4.1431 PPL=63.00
+[Epoch 5/5] Train NLL=3.8838 PPL=48.61   (239.7s)
+           Valid NLL=4.1082 PPL=60.84
+
+Final Validation Perplexity: 60.84
+
+
+PART 1: NEXT-WORD PREDICTION
+--------------------------------------------------------------------------------
+Implementation: Uses argmax on the output logits to predict the most likely 
+next token.
+
+Example 1: "The capital of France is"
+Top 5 predictions:
+  located              prob=0.2528
+  the                  prob=0.1903
+  <UNK>                prob=0.1194
+  a                    prob=0.0351
+  situated             prob=0.0319
+
+Example 2: "In machine learning, deep neural networks"
+Top 5 predictions:
+  are                  prob=0.1849
+  ,                    prob=0.1105
+  (                    prob=0.0614
+  have                 prob=0.0604
+  such                 prob=0.0545
+
+Example 3: "Natural language processing deals with"
+Top 5 predictions:
+  the                  prob=0.3076
+  <UNK>                prob=0.0494
+  a                    prob=0.0213
+  how                  prob=0.0112
+  various              prob=0.0100
+
+Observations:
+- The model correctly predicts grammatically appropriate words (verbs, articles)
+- It shows understanding of sentence structure and context
+- Probabilities are well-distributed among reasonable candidates
+
+
+PART 2: FULL TEXT GENERATION
+--------------------------------------------------------------------------------
+Implementation: Random sampling algorithm with:
+- Temperature: Controls randomness by scaling logits before softmax
+- Top-K sampling: Restricts sampling to the K most probable tokens
+- Early stopping: Terminates when EOS token is generated or max_length reached
+
+================================================================================
+EXPERIMENT 1: Effect of Temperature (with topk=50)
+================================================================================
+
+Prompt: "In natural language processing, a Transformer"
+
+Temperature = 0.5 (Conservative):
+in natural language processing , a <UNK> is a <UNK> <UNK> , and uses an <UNK> 
+<UNK> as a <UNK> <UNK> , and <UNK> as a <UNK> <UNK> .
+
+Temperature = 0.8 (Balanced):
+in natural language processing , a <UNK> is used to compare its <UNK> to an 
+<UNK> function or <UNK> process ( compare between <UNK> and <UNK> ) . there 
+are several <UNK> properties that allow for <UNK> , and the <UNK> of a natural 
+number , which
+
+Temperature = 1.2 (Creative):
+in natural language processing , a <UNK> is used to indicate <UNK> and <UNK> 
+frequencies , or to determine the <UNK> frequencies in the language .
+
+Observations on Temperature:
+- Lower temperature (0.5): More repetitive and conservative, tends to use 
+  high-probability words repeatedly
+- Medium temperature (0.8): Better balance between coherence and diversity
+- Higher temperature (1.2): More creative but sometimes less coherent
+
+
+================================================================================
+EXPERIMENT 2: Effect of Top-K Sampling (with temperature=0.8)
+================================================================================
+
+Prompt: "In natural language processing, a Transformer"
+
+Top-K = 10 (Very Conservative):
+in natural language processing , a <UNK> is an <UNK> <UNK> <UNK> <UNK> ' 
+function to <UNK> . this is an <UNK> <UNK> <UNK> , <UNK> in <UNK> , and 
+<UNK> in the <UNK> language .
+
+Top-K = 50 (Balanced):
+in natural language processing , a <UNK> is a set of rules that can be used 
+in the language , or is a set of four or more objects . the object is a set 
+of `` sets '' , called an `` set '' . the
+
+Top-K = None (Full Vocabulary):
+in natural language processing , a <UNK> by the use of <UNK> <UNK> spaces to 
+form related <UNK> spaces such as surface , heat , and volume . the 
+composition of the <UNK> image is produced by <UNK> <UNK> , <UNK> , and 
+<UNK> <UNK> .
+
+Observations on Top-K:
+- Small K (10): Very safe, consistent word choices but less diverse
+- Medium K (50): Good balance between safety and diversity
+- No restriction (None): Most diverse but can produce surprising/unexpected words
+
+
+================================================================================
+EXPERIMENT 3: Testing Different Prompts
+================================================================================
+
+Prompt 1: "In natural language processing, a Transformer"
+Generated text:
+in natural language processing , a <UNK> is a system of <UNK> ( <UNK> ) , 
+<UNK> ( <UNK> ) , <UNK> ( <UNK> ) , <UNK> ( <UNK> ) , and <UNK> ( <UNK> , 
+<UNK> ) . the <UNK> is a series of <UNK> used in a <UNK> of <UNK> . as a 
+<UNK> is
+
+Observation: The model attempts to describe a system or structure, showing 
+understanding of technical/systematic contexts.
+
+
+Prompt 2: "Is Stockholm the capital of Sweden? Answer yes or no. The answer is"
+Generated text:
+is stockholm the capital of sweden ? answer yes or no . the answer is in the 
+united kingdom .
+
+Observation: The model recognizes a question format and attempts to provide 
+an answer. While not factually correct, it understands the context requires 
+a location/country as an answer.
+
+
+Prompt 3: "Write a Python program that reverses a list."
+Generated text:
+write a python program that reverses a list . this program is compiled to 
+create the third most common of <UNK> . the middle is based on the complete 
+list of operations of all classes of <UNK> of all the types that are being 
+included in this list .
+
+Observation: The model recognizes programming-related keywords but cannot 
+actually write code. It continues with text that sounds vaguely technical 
+but is not coherent code.
+
+
+================================================================================
+OVERALL OBSERVATIONS AND REFLECTION
+================================================================================
+
+Model Strengths:
+1. Good grammatical structure - generates mostly grammatically correct sequences
+2. Context awareness - understands sentence structure and word relationships
+3. Reasonable perplexity (60.84) showing effective learning
+4. Stable training with consistent perplexity reduction across epochs
+
+Model Limitations:
+1. Many <UNK> tokens due to vocabulary limitations (20K words)
+2. Limited factual knowledge - cannot answer factual questions correctly
+3. Cannot generate actual code despite recognizing programming prompts
+4. Generated text often lacks long-range coherence beyond sentence boundaries
+
+Effect of Hyperparameters:
+- Temperature: Lower values (0.5) produce safer but repetitive text; higher 
+  values (1.2) are more creative but less coherent. 0.8 seems optimal.
+- Top-K: Smaller K (10) is very conservative; K=50 provides good diversity 
+  while maintaining quality; unrestricted sampling can be too random.
+
+Comparison with expectations:
+- The model generates English-like text but lacks semantic coherence
+- Much weaker than instruction-tuned models like ChatGPT
+- This is expected given the small size (9M parameters vs billions) and 
+  limited training (Wikipedia only)
+
+
+================================================================================
+IMPLEMENTATION DETAILS
+================================================================================
+
+Text Generation Algorithm:
+1. Encode the prompt using the tokenizer
+2. For each generation step:
+   a. Get model predictions (logits) for next token
+   b. Apply temperature scaling: logits = logits / temperature
+   c. Apply top-K filtering if specified
+   d. Convert to probabilities using softmax
+   e. Sample next token from the probability distribution
+   f. Append token to sequence and update input
+   g. Stop if EOS token is generated or max_length reached
+3. Decode the generated token sequence back to text
+
+Key Implementation Points:
+- Uses torch.multinomial() for random sampling (not greedy argmax)
+- Temperature scaling happens before softmax
+- Top-K filtering zeros out logits for tokens outside top-K
+- Proper handling of special tokens (BOS, EOS, PAD, UNK)
+- Early stopping on EOS for natural termination
+
+
+================================================================================
+FILES INCLUDED
+================================================================================
+
+Code Files:
+- A2_skeleton.py: Complete Transformer implementation
+- train_a2.py: Training script
+- generate_text.py: Text generation with temperature and top-K
+- A2_complete_demo.py: Complete demonstration of all features
+- compare_generation.py: Compare with pre-trained OLMo-2
+
+Output Files:
+- A2_output.txt: This file with all results
+- a2_model_lr1e-4_b16_h256_l4/: Trained model checkpoint
+- a2_tokenizer.pkl: Tokenizer file
+- a2_transformer-89686.out: Training log
+
+
+================================================================================
+END OF REPORT
+================================================================================

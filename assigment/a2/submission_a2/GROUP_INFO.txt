@@ -1,0 +1,84 @@
+================================================================================
+Assignment 2: Transformer Language Model
+Programming Part Submission
+================================================================================
+
+GROUP MEMBERS:
+- Name: [你的名字]
+- CID: [你的CID]
+
+[如果有组员，请添加他们的信息]
+
+HONOR CODE:
+By submitting this solution, we guarantee that the division of labor within 
+the group has been fair, and every group member can answer detailed questions 
+about any part of the solution.
+
+================================================================================
+SUBMISSION CONTENTS
+================================================================================
+
+1. A2_skeleton.py
+   - Complete Transformer implementation
+   - All required components: MLP, Attention, DecoderLayer, Full Model
+   
+2. train_a2.py
+   - Training script with tokenizer integration
+   - Evaluation and perplexity calculation
+   
+3. generate_text.py
+   - Text generation with temperature and top-K sampling
+   - Command-line interface for easy testing
+   
+4. A2_complete_demo.py
+   - Complete demonstration of all features
+   - Shows both next-word prediction and full text generation
+   
+5. A2_output.txt
+   - Training results (Validation PPL: 60.84)
+   - Next-word prediction examples
+   - Full text generation with different parameters
+   - Analysis and observations
+   
+6. README.md
+   - Usage instructions
+   - Model architecture details
+   - Hyperparameter settings
+
+7. Model files (in a2_model_lr1e-4_b16_h256_l4/)
+   - config.json: Model configuration
+   - pytorch_model.bin: Trained weights
+   
+8. a2_tokenizer.pkl
+   - Tokenizer for preprocessing
+
+================================================================================
+HOW TO RUN
+================================================================================
+
+1. Activate environment:
+   source /data/courses/2025_dat450_dit247/venvs/dat450_venv/bin/activate
+
+2. Train the model (already done):
+   python train_a2.py --train_file <path> --val_file <path> [options]
+
+3. Generate text:
+   python generate_text.py \
+       --model_dir ./a2_model_lr1e-4_b16_h256_l4 \
+       --tokenizer_file a2_tokenizer.pkl \
+       --prompt "Your prompt here" \
+       --max_length 50 --temperature 0.8 --topk 50
+
+4. Run complete demo:
+   python A2_complete_demo.py
+
+================================================================================
+KEY RESULTS
+================================================================================
+
+Final Validation Perplexity: 60.84
+Model Parameters: 9,317,120
+Training Time: ~25 minutes on GPU
+Architecture: 4-layer Transformer with 256 hidden size, 4 attention heads
+
+================================================================================
