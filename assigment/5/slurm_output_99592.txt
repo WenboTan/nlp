@@ -1,0 +1,108 @@
+Job started on europa at Mon Dec  1 12:40:09 PM CET 2025
+Python version: Python 3.12.3
+GPU information:
+Mon Dec  1 12:40:15 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 565.57.01              Driver Version: 565.57.01      CUDA Version: 12.7     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L4                      Off |   00000000:0D:00.0 Off |                    0 |
+| N/A   47C    P0             28W /   72W |       1MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA L4                      Off |   00000000:37:00.0 Off |                    0 |
+| N/A   46C    P0             27W /   72W |       1MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA L4                      Off |   00000000:4A:00.0 Off |                    0 |
+| N/A   31C    P0             26W /   72W |       1MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA L4                      Off |   00000000:61:00.0 Off |                    0 |
+| N/A   28C    P0             26W /   72W |       1MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   4  NVIDIA L4                      Off |   00000000:A0:00.0 Off |                    0 |
+| N/A   45C    P0             28W /   72W |       1MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   5  NVIDIA L4                      Off |   00000000:B5:00.0 Off |                    0 |
+| N/A   44C    P0             27W /   72W |       1MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   6  NVIDIA L4                      Off |   00000000:CA:00.0 Off |                    0 |
+| N/A   29C    P0             27W /   72W |       1MiB /  23034MiB |      4%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   7  NVIDIA L4                      Off |   00000000:E1:00.0 Off |                    0 |
+| N/A   30C    P0             27W /   72W |       1MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+The following generation flags are not valid and may be ignored: ['temperature']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Device set to use cuda:0
+You seem to be using the pipelines sequentially on GPU. In order to maximize efficiency please use a dataset
+=== Hardware Check ===
+PyTorch Version: 2.9.0+cu128
+CUDA Available: Yes
+GPU Count: 1
+Current GPU: NVIDIA L4
+======================
+
+--- Step 1: Loading Dataset ---
+Total documents: 890
+Total questions: 890
+
+--- Step 2: Configuring Language Model ---
+LM Check (Sky blue?): No
+
+--- Step 3: Setting up Vector Store ---
+Created 1971 chunks.
+Building Chroma Vector Store (Index)...
+Vector Store Ready.
+
+--- Step 4: Defining RAG Pipeline (LCEL) ---
+
+--- Step 5: Full Evaluation ---
+Running on FULL dataset (890 samples)...
+Processed 50/890 samples...
+Processed 100/890 samples...
+Processed 150/890 samples...
+Processed 200/890 samples...
+Processed 250/890 samples...
+Processed 300/890 samples...
+Processed 350/890 samples...
+Processed 400/890 samples...
+Processed 450/890 samples...
+Processed 500/890 samples...
+Processed 550/890 samples...
+Processed 600/890 samples...
+Processed 650/890 samples...
+Processed 700/890 samples...
+Processed 750/890 samples...
+Processed 800/890 samples...
+Processed 850/890 samples...
+
+Evaluation completed in 171.35 seconds.
+
+=== FINAL RESULTS ===
+RAG Accuracy: 0.7427
+RAG F1 Score: 0.8167
+Valid RAG Responses: 890/890
+Baseline Accuracy: 0.5854
+Valid Baseline Responses: 890/890
+Retrieval Accuracy: 0.9719
+
+Writing predictions to 'evaluation_log.csv'...
+Done.
+Job finished at Mon Dec  1 12:53:27 PM CET 2025
