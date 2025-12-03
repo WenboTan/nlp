@@ -1,0 +1,21 @@
+# 本地模型 RAG 系统依赖
+# 适用于学校 GPU 集群
+
+# 核心 LangChain 包
+langchain>=0.1.0
+langchain-community>=0.0.20
+langchain-chroma>=0.1.0
+
+# 向量数据库
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# HuggingFace 和本地模型支持
+torch>=2.0.0
+transformers>=4.35.0
+accelerate>=0.24.0
+bitsandbytes>=0.41.0  # 用于 8-bit 量化
+
+# 数据处理
+datasets>=2.14.0
+numpy>=1.24.0
