@@ -23,15 +23,13 @@ DB_PATH = './chalmers_chroma_db'
 EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
 
 # 选择你的 LLM 模型（根据 GPU 显存选择）
-# 小型模型（推荐开始用这个）:
-LLM_MODEL = "microsoft/Phi-3-mini-4k-instruct"      # ~8GB 显存
+# 推荐模型（按质量排序）:
+LLM_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"  # ~14GB 显存，质量最好
 
-# 中型模型（如果有足够显存）:
-# LLM_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"  # ~14GB 显存
+# 备选模型:
+# LLM_MODEL = "microsoft/Phi-3-mini-4k-instruct"      # ~8GB 显存，质量不错
 # LLM_MODEL = "Qwen/Qwen2-7B-Instruct"              # ~14GB 显存，支持中文
-
-# 大型模型（如果有 24GB+ 显存）:
-# LLM_MODEL = "meta-llama/Meta-Llama-3-8B-Instruct" # ~16GB 显存
+# LLM_MODEL = "meta-llama/Meta-Llama-3-8B-Instruct" # ~16GB 显存，需要授权
 
 RETRIEVAL_K = 5
 MAX_NEW_TOKENS = 512
@@ -95,10 +93,13 @@ def load_local_llm(model_name: str, device: str = 'cuda', use_8bit: bool = True)
         model=model,
         tokenizer=tokenizer,
         max_new_tokens=MAX_NEW_TOKENS,
-        temperature=0.3,                # 低温度 = 更确定性的回答
+        temperature=0.7,                # 适中温度，保持创造性
         top_p=0.9,
-        repetition_penalty=1.15,        # 避免重复
-        do_sample=True
+        top_k=50,                       # 限制候选词数量
+        repetition_penalty=1.2,         # 强力避免重复
+        no_repeat_ngram_size=3,         # 禁止3-gram重复
+        do_sample=True,
+        return_full_text=False          # 只返回新生成的文本
     )
     
     # 包装为 LangChain LLM

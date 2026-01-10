@@ -220,7 +220,7 @@ def build_vector_database(
 
 if __name__ == '__main__':
     # Configuration
-    JSON_FILE = 'chalmers_courses_full_scraped.json'
+    JSON_FILE = 'data/chalmers_courses_full_scraped.json'
     DB_PATH = './chalmers_chroma_db'
     
     # Check if JSON file exists

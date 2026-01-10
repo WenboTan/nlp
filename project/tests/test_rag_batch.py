@@ -24,16 +24,43 @@ from langchain_core.output_parsers import StrOutputParser
 # ===== 配置 =====
 DB_PATH = './chalmers_chroma_db'
 EMBEDDING_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
-# 使用更稳定兼容的模型
-LLM_MODEL = "google/flan-t5-large"  # 更稳定，transformers 兼容性好
+# 使用高质量模型进行测试
+LLM_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"  # 效果最好的7B模型
+# 备选: LLM_MODEL = "microsoft/Phi-3-mini-4k-instruct"  # 如果显存不够
 RETRIEVAL_K = 5
 MAX_NEW_TOKENS = 512
 
-# 测试查询列表
+# 测试查询列表（覆盖多种查询场景）
 TEST_QUERIES = [
+    # 1. 课程搜索 - 按主题
     "What machine learning courses are available?",
+    
+    # 2. 领域查询
     "Tell me about database courses at Chalmers.",
+    
+    # 3. 时间冲突检测（核心功能）
+    "Can I take TDA357 and DAT450 together? Do they have schedule conflicts?",
+    
+    # 4. 先修课程查询
     "What are the prerequisites for advanced programming courses?",
+    
+    # 5. 按Block和学分筛选
+    "Show me all 7.5 credit courses offered in Block C.",
+    
+    # 6. 语言要求查询
+    "Which courses are taught in English and suitable for international students?",
+    
+    # 7. 具体课程信息
+    "Tell me everything about the course TDA357.",
+    
+    # 8. 多课程对比
+    "What's the difference between DAT450 and TDA362?",
+    
+    # 9. 项目课程查询
+    "Are there any courses that involve working on real projects?",
+    
+    # 10. 课程推荐
+    "I'm interested in AI and want to take courses in spring (Block 3 and 4). What do you recommend?",
 ]
 
 
@@ -68,8 +95,9 @@ def load_local_llm(model_name: str, device: str = 'cuda', use_8bit: bool = False
         pipeline_kwargs = {
             'max_new_tokens': MAX_NEW_TOKENS,
             'do_sample': True,
-            'temperature': 0.1,
-            'top_p': 0.95
+            'temperature': 0.7,
+            'top_p': 0.9,
+            'repetition_penalty': 1.2
         }
     else:
         model = AutoModelForCausalLM.from_pretrained(
@@ -81,8 +109,11 @@ def load_local_llm(model_name: str, device: str = 'cuda', use_8bit: bool = False
         pipeline_kwargs = {
             'max_new_tokens': MAX_NEW_TOKENS,
             'do_sample': True,
-            'temperature': 0.1,
-            'top_p': 0.95,
+            'temperature': 0.7,
+            'top_p': 0.9,
+            'top_k': 50,
+            'repetition_penalty': 1.2,
+            'no_repeat_ngram_size': 3,
             'return_full_text': False
         }
     
