@@ -1,0 +1,208 @@
+{
+  "test_metadata": {
+    "date": "2026-01-10",
+    "model": "Google Gemini gemini-2.5-flash",
+    "version": "improved_retrieval",
+    "configuration": {
+      "retrieval_k": 10,
+      "previous_k": 5,
+      "prompt_strategy": "relaxed_partial_info",
+      "retrieval_method": "smart_retriever_with_course_code_extraction"
+    }
+  },
+  "summary": {
+    "total_queries": 10,
+    "successful": 6,
+    "failed": 4,
+    "success_rate": 0.60,
+    "improvement_vs_baseline": "+10-20%"
+  },
+  "results": [
+    {
+      "query_number": 1,
+      "query": "What machine learning courses are available?",
+      "status": "success",
+      "courses_found": ["EEN175", "DAT441", "DAT341", "TIF360", "DAT635", "MMS131"],
+      "quality": "excellent",
+      "notes": "Comprehensive list with all details"
+    },
+    {
+      "query_number": 2,
+      "query": "Tell me about database courses at Chalmers.",
+      "status": "success",
+      "courses_found": ["DAT335", "TDA357", "DAT475"],
+      "quality": "excellent",
+      "notes": "Major improvement! TDA357 now correctly retrieved"
+    },
+    {
+      "query_number": 3,
+      "query": "Can I take TDA357 and DAT450 together in the same semester?",
+      "status": "failed",
+      "reason": "insufficient_information",
+      "problem_category": "multi_course_retrieval",
+      "notes": "Needs to retrieve and compare schedule blocks for both courses"
+    },
+    {
+      "query_number": 4,
+      "query": "What are the prerequisites for advanced programming courses?",
+      "status": "success",
+      "courses_found": ["DAT151", "TDA342", "DAT575", "DAT480", "EDA093", "DAT516"],
+      "quality": "excellent",
+      "notes": "Comprehensive prerequisites for 6 courses"
+    },
+    {
+      "query_number": 5,
+      "query": "Show me all 7.5 credit courses offered in Block C.",
+      "status": "failed",
+      "reason": "insufficient_information",
+      "problem_category": "complex_filtering",
+      "notes": "Block metadata not well-represented in retrieved chunks"
+    },
+    {
+      "query_number": 6,
+      "query": "Which courses are taught in English and suitable for international students?",
+      "status": "success",
+      "courses_found": ["TRA345", "TEK665", "IMS160"],
+      "quality": "good",
+      "notes": "Found exchange student courses, could potentially find more"
+    },
+    {
+      "query_number": 7,
+      "query": "Tell me everything about the course TDA357.",
+      "status": "failed",
+      "reason": "insufficient_information",
+      "problem_category": "single_course_query",
+      "critical": true,
+      "notes": "CRITICAL: Q2 found TDA357 but Q7 doesn't. Metadata filtering broken"
+    },
+    {
+      "query_number": 8,
+      "query": "What's the difference between DAT450 and TDA362?",
+      "status": "failed",
+      "reason": "insufficient_information",
+      "problem_category": "multi_course_retrieval",
+      "notes": "Needs both courses retrieved for comparison"
+    },
+    {
+      "query_number": 9,
+      "query": "Are there any courses that involve working on real projects?",
+      "status": "success",
+      "courses_found": ["MVE405", "TME131", "TRA385", "TEK495", "TEK830", "TEK486"],
+      "quality": "excellent",
+      "notes": "Diverse selection with industry partnerships highlighted"
+    },
+    {
+      "query_number": 10,
+      "query": "I'm interested in AI and want to take courses in spring (Block 3 and 4). What do you recommend?",
+      "status": "failed",
+      "reason": "insufficient_information",
+      "problem_category": "domain_knowledge_gap",
+      "notes": "LP vs Block terminology mismatch (LP3/LP4 vs Block C/D)"
+    }
+  ],
+  "problem_analysis": {
+    "single_course_queries": {
+      "count": 1,
+      "affected_queries": [7],
+      "issue": "Metadata filtering not working for explicit course code queries",
+      "priority": "HIGH"
+    },
+    "multi_course_queries": {
+      "count": 2,
+      "affected_queries": [3, 8],
+      "issue": "Insufficient chunks retrieved for multiple courses",
+      "priority": "HIGH"
+    },
+    "complex_filtering": {
+      "count": 1,
+      "affected_queries": [5],
+      "issue": "Multiple metadata filters not supported",
+      "priority": "MEDIUM"
+    },
+    "domain_knowledge_gap": {
+      "count": 1,
+      "affected_queries": [10],
+      "issue": "Missing LP-to-Block mapping documentation",
+      "priority": "MEDIUM"
+    }
+  },
+  "recommendations": {
+    "high_priority": [
+      {
+        "id": 1,
+        "title": "Fix single course code queries",
+        "action": "Debug and fix metadata filtering in Chroma vectorstore",
+        "expected_impact": "Q7 success",
+        "implementation": "Test filter={'course_code': 'TDA357'}, add explicit index if needed"
+      },
+      {
+        "id": 2,
+        "title": "Improve multi-course retrieval",
+        "action": "Implement dynamic K based on number of course codes",
+        "expected_impact": "Q3, Q8 success",
+        "implementation": "K = BASE_K * max(1, len(course_codes)), ensure 5+ chunks per course"
+      }
+    ],
+    "medium_priority": [
+      {
+        "id": 3,
+        "title": "Add Block/LP mapping documentation",
+        "action": "Create synthetic documents explaining LP1-4 to Block A-D mapping",
+        "expected_impact": "Q10 success",
+        "implementation": "Add to vector store as metadata documents"
+      },
+      {
+        "id": 4,
+        "title": "Implement hybrid search",
+        "action": "Combine semantic search with BM25 keyword search",
+        "expected_impact": "Better course code matching overall",
+        "implementation": "Use rank-bm25 library, combine scores"
+      }
+    ],
+    "low_priority": [
+      {
+        "id": 5,
+        "title": "Support complex metadata filtering",
+        "action": "Enable queries with multiple filters (credits AND block)",
+        "expected_impact": "Q5 success",
+        "implementation": "Post-filter in Python if Chroma doesn't support"
+      }
+    ]
+  },
+  "comparison_baseline": {
+    "before": {
+      "retrieval_k": 5,
+      "prompt_strategy": "strict_no_info",
+      "retrieval_method": "basic_similarity",
+      "success_rate": 0.45,
+      "tda357_general_query": false,
+      "tda357_specific_query": false
+    },
+    "after": {
+      "retrieval_k": 10,
+      "prompt_strategy": "relaxed_partial_info",
+      "retrieval_method": "smart_retriever",
+      "success_rate": 0.60,
+      "tda357_general_query": true,
+      "tda357_specific_query": false
+    },
+    "improvements": [
+      "Retrieval K doubled (5→10)",
+      "Prompt allows partial information",
+      "Smart retriever extracts course codes",
+      "Success rate increased by 15 percentage points",
+      "TDA357 now found in general queries"
+    ],
+    "remaining_issues": [
+      "Single course queries still fail",
+      "Multi-course comparisons need work",
+      "Metadata filtering broken"
+    ]
+  },
+  "next_steps": [
+    "Immediate: Debug metadata filtering and retest Q7",
+    "Short-term: Implement dynamic K for Q3 & Q8",
+    "Medium-term: Add block mapping docs for Q10",
+    "Long-term: Consider hybrid search upgrade"
+  ]
+}
