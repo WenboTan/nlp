@@ -72,6 +72,12 @@ questions = pd.DataFrame({
 print(f"Total documents: {len(documents)}")
 print(f"Total questions: {len(questions)}")
 
+# Sanity Check Step 1: Print sample data
+print("\n[Sanity Check Step 1] Sample Data:")
+print(f"Example Question: {questions.iloc[0].question}")
+print(f"Example Abstract (first 200 chars): {documents.iloc[0].abstract[:200]}...")
+print(f"Example Gold Label: {questions.iloc[0].gold_label}")
+
 # ==========================================
 # Step 2: Configure LangChain LM
 # ==========================================
@@ -105,6 +111,11 @@ print("\n--- Step 3: Setting up Vector Store ---")
 # 3.1 Embedding Model
 embedding_model = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_ID, model_kwargs={'device': 'cuda' if torch.cuda.is_available() else 'cpu'})
 
+# Sanity Check Step 3.1: Embedding shape
+test_embedding = embedding_model.embed_query("This is a test passage for embedding.")
+print(f"\n[Sanity Check Step 3.1] Embedding Shape: {len(test_embedding)} dimensions")
+print(f"Sample embedding values (first 5): {test_embedding[:5]}")
+
 # 3.2 Chunking
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000,
@@ -119,6 +130,12 @@ texts = text_splitter.create_documents(
 )
 print(f"Created {len(texts)} chunks.")
 
+# Sanity Check Step 3.2: Sample chunks
+print("\n[Sanity Check Step 3.2] Sample Chunk:")
+print(f"Chunk Content (first 150 chars): {texts[0].page_content[:150]}...")
+print(f"Chunk Metadata: {texts[0].metadata}")
+print(f"Total chunks from first document: {sum(1 for t in texts if t.metadata['id'] == documents.index[0])}")
+
 # 3.3 Vector Store (Chroma)
 print("Building Chroma Vector Store (Index)...")
 vector_store = Chroma.from_documents(
@@ -127,6 +144,16 @@ vector_store = Chroma.from_documents(
     collection_name="pubmed_qa_full"
 )
 print("Vector Store Ready.")
+
+# Sanity Check Step 3.3: Query vector store
+print("\n[Sanity Check Step 3.3] Testing Vector Store Retrieval:")
+test_query = "What is programmed cell death?"
+print(f"Query: '{test_query}'")
+test_results = vector_store.similarity_search_with_score(test_query, k=3)
+for i, (doc, score) in enumerate(test_results, 1):
+    print(f"  Result {i} [Similarity Score: {score:.4f}]:")
+    print(f"    Content (first 100 chars): {doc.page_content[:100]}...")
+    print(f"    Metadata: {doc.metadata}")
 
 # ==========================================
 # Step 4: Define RAG Pipeline (Option B)
@@ -161,6 +188,20 @@ generation_chain = (
 rag_chain = RunnableParallel(
     {"context": retriever, "question": RunnablePassthrough()}
 ).assign(answer=generation_chain)
+
+# Sanity Check Step 4: Single RAG execution
+print("\n[Sanity Check Step 4] Single RAG Execution Test:")
+sample_question = questions.iloc[0].question
+print(f"Test Question: {sample_question}")
+print(f"Gold Label: {questions.iloc[0].gold_label}")
+print(f"Gold Document ID: {questions.iloc[0].gold_document_id}")
+print("\nRunning RAG pipeline...")
+sample_result = rag_chain.invoke(sample_question)
+print(f"\nRetrieved Context:")
+print(f"  Document ID: {sample_result['context'][0].metadata['id']}")
+print(f"  Content (first 200 chars): {sample_result['context'][0].page_content[:200]}...")
+print(f"\nModel Answer: '{sample_result['answer'].strip()}'")
+print(f"Match with Gold? {sample_result['context'][0].metadata['id'] == questions.iloc[0].gold_document_id}")
 
 # ==========================================
 # Step 5: Evaluate RAG on the dataset

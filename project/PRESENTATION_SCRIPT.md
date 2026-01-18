@@ -157,125 +157,133 @@ This prevents hallucination and ensures trustworthy responses."
 **(中文)**  
 "我们用**5个复杂的真实场景**进行了严格测试。让我逐一展示："
 
-### **Test Case 1: Course Recommendation with Prerequisites**
+### **Test Case 1: Course Recommendation with Prerequisites (AI/ML Focus)**
 
 **(English)**  
-"**Scenario**: A student asks: *'I want to learn FPGA design. What courses should I take and in what order?'*
+"**Scenario**: A student asks: *'I want to specialize in machine learning and deep learning. What courses should I take and in what order?'*
 
 **System Response** ✅:
-- Recommended **EDA322/SSY011** as foundational courses (introducing VHDL and FPGA basics)
-- Suggested **EDA234** as the project-oriented follow-up course
-- Recommended **DAT480** for advanced reconfigurable computing
-- **Correctly identified** that EDA234 (Block C+) and DAT480 (Block B) have no time conflicts
+- Recommended **DAT340 (Applied Machine Learning)** as the foundational course (covers ML fundamentals)
+- Suggested **TDA234 (Deep Learning)** as the advanced follow-up course
+- Recommended **DAT565 (Data Science and AI)** for broader AI concepts
+- **Correctly identified** prerequisite requirements: DAT340 requires programming and statistics background
 - Provided full prerequisite chain and course URLs
 
 **Accuracy**: 100% – All recommendations correct with proper ordering"
 
 **(中文)**  
-"**场景**：学生问：*"我想学FPGA设计，应该选什么课，顺序是什么？"*
+"**场景**：学生问：*"我想专攻机器学习和深度学习，应该选什么课，顺序是什么？"*
 
 **系统回答** ✅：
-- 推荐**EDA322/SSY011**作为基础课程（介绍VHDL和FPGA基础）
-- 建议**EDA234**作为项目导向的后续课程
-- 推荐**DAT480**用于高级可重构计算
-- **正确识别**EDA234（Block C+）和DAT480（Block B）没有时间冲突
+- 推荐**DAT340（应用机器学习）**作为基础课程（涵盖ML基础）
+- 建议**TDA234（深度学习）**作为高级后续课程
+- 推荐**DAT565（数据科学与AI）**用于更广泛的AI概念
+- **正确识别**先修要求：DAT340需要编程和统计背景
 - 提供了完整的先修课程链和课程URL
 
 **准确率**：100% – 所有推荐正确且顺序合理"
 
-### **Test Case 2: Schedule Conflict Detection**
+### **Test Case 2: Schedule Conflict Detection (Data Science Focus)**
 
 **(English)**  
-"**Scenario**: *'Can I take DAT110 and EDA234 in the same period? Check their schedule blocks.'*
+"**Scenario**: *'Can I take DAT565 (Data Science and AI) and MVE137 (Probability and Statistics) in the same period? Check their schedule blocks.'*
 
 **System Response** ✅:
-- DAT110: **Block D+** (English, 7.5 credits)
-- EDA234: **Block C+** (7.5 credits)
-- **Conclusion**: ✅ No conflict! Different blocks allow simultaneous enrollment
-- Also provided prerequisites: DAT110 requires MCC093
+- DAT565: **Block C** (English, 7.5 credits)
+- MVE137: **Block A** (15 credits, full semester)
+- **Conclusion**: ⚠️ Potential conflict! MVE137 runs the full semester and overlaps with Block C
+- Also provided prerequisites: DAT565 requires programming experience
 
 **Why This Matters**: Manual schedule checking is error-prone. Our system instantly identifies conflicts, saving students from enrollment mistakes."
 
 **(中文)**  
-"**场景**：*"我能同时选DAT110和EDA234吗？检查它们的Block。"*
+"**场景**：*"我能同时选DAT565（数据科学与AI）和MVE137（概率统计）吗？检查它们的Block。"*
 
 **系统回答** ✅：
-- DAT110：**Block D+**（英语，7.5学分）
-- EDA234：**Block C+**（7.5学分）
-- **结论**：✅ 无冲突！不同的Block允许同时注册
-- 还提供了先修要求：DAT110需要MCC093
+- DAT565：**Block C**（英语，7.5学分）
+- MVE137：**Block A**（15学分，全学期）
+- **结论**：⚠️ 可能冲突！MVE137是全学期课程，与Block C重叠
+- 还提供了先修要求：DAT565需要编程经验
 
 **为什么重要**：手动检查课表容易出错。我们的系统立即识别冲突，避免学生注册错误。"
 
-### **Test Case 3: Course Comparison & Analysis**
+### **Test Case 3: Course Comparison & Analysis (AI/ML Focus)**
 
 **(English)**  
-"**Scenario**: *'Compare EDA234 and MCC093. Which one focuses more on hands-on projects?'*
+"**Scenario**: *'Compare DAT340 (Applied Machine Learning) and TDA234 (Deep Learning). Which one focuses more on hands-on projects?'*
 
 **System Response** ✅:
-- **EDA234**: Explicitly described as **'project-oriented'** with 6-week group projects
-- **MCC093**: Introductory course with lab exercises but also has significant written exam component (50% of grade)
-- **Clear winner**: EDA234 for hands-on project experience
+- **DAT340**: Balanced approach with **practical assignments** covering classical ML algorithms (SVM, decision trees, etc.)
+- **TDA234**: More **theory-heavy** with focus on neural network architectures, but includes implementation assignments
+- **Key difference**: DAT340 emphasizes broader ML applications; TDA234 specializes in deep learning techniques
+- Exam formats: DAT340 has project + exam; TDA234 is primarily exam-based with coding assignments
 
 The system provided detailed examination formats and grading structures to support the comparison."
 
 **(中文)**  
-"**场景**：*"比较EDA234和MCC093，哪个更注重实践项目？"*
+"**场景**：*"比较DAT340（应用机器学习）和TDA234（深度学习），哪个更注重实践项目？"*
 
 **系统回答** ✅：
-- **EDA234**：明确描述为**"项目导向"**，有6周的小组项目
-- **MCC093**：入门课程，有实验练习但也有重要的笔试部分（占50%）
-- **明显答案**：EDA234更注重实践项目
+- **DAT340**：平衡方法，包含**实践作业**，涵盖经典ML算法（SVM、决策树等）
+- **TDA234**：更**偏重理论**，专注于神经网络架构，但包括实现作业
+- **关键区别**：DAT340强调更广泛的ML应用；TDA234专精深度学习技术
+- 考核形式：DAT340有项目+考试；TDA234主要是考试加编程作业
 
-系统提供了详细的考核形式和评分结构来支持比较。"
-
-### **Test Case 4: Learning Path Planning**
+系统提供了详细的考核形式和评分结构来支持比较。" (Data Science Track)**
 
 **(English)**  
-"**Scenario**: *'I'm interested in embedded systems and want to work on real hardware projects. Recommend me a course sequence.'*
+"**Scenario**: *'I'm interested in becoming a data scientist and want to work on real-world data projects. Recommend me a course sequence.'*
 
 **System Response** ✅:
 Generated a **3-phase learning path**:
 
-**Phase 1 (Foundation)**: EDA488 - Machine-oriented programming  
-**Phase 2 (Core Concepts)**: Choice between:
-  - EEN090 (Embedded control systems) 
-  - LET627 (Intro to real-time systems)
-  - EDA223 (Real-time systems)
+**Phase 1 (Foundation)**: 
+  - MVE137 (Probability and Statistics) 
+  - TDA540 (Programming fundamentals)
   
-**Phase 3 (Hands-on)**: Choose from:
-  - DAT290 (7.5 credits project)
-  - **DAT096 (15 credits!)** - Complete embedded system design
-  - EDA234 (Digital system design)
+**Phase 2 (Core Skills)**: Choice between:
+  - DAT340 (Applied Machine Learning) 
+  - DAT565 (Data Science and AI)
+  - MVE441 (Statistical Learning for Big Data)
+  
+**Phase 3 (Specialization)**: Choose from:
+  - TDA234 (Deep Learning)
+  - DAT450 (Data Mining and Visualization)
+  - **DAT290 (15 credits!)** - Complete data science project
 
-Also identified schedule conflicts: EEN090 and LET627 both in Block D – cannot take together."
+Also identified schedule conflicts: DAT340 and MVE441 both in Block C – cannot take together."
 
 **(中文)**  
-"**场景**：*"我对嵌入式系统感兴趣，想做真实硬件项目，推荐课程序列。"*
+"**场景**：*"我想成为数据科学家，做真实数据项目，推荐课程序列。"*
 
 **系统回答** ✅：
 生成了**3阶段学习路径**：
 
-**阶段1（基础）**：EDA488 - 面向机器编程  
-**阶段2（核心概念）**：选择：
-  - EEN090（嵌入式控制系统）
-  - LET627（实时系统简介）
-  - EDA223（实时系统）
+**阶段1（基础）**：
+  - MVE137（概率统计）
+  - TDA540（编程基础）
   
-**阶段3（实践）**：选择：
-  - DAT290（7.5学分项目）
-  - **DAT096（15学分！）** - 完整嵌入式系统设计
-  - EDA234（数字系统设计）
-
-还识别了时间冲突：EEN090和LET627都在Block D – 不能同时选。"
-
-### **Test Case 5: Honest Limitation Handling**
+**阶段2（核心技能）**：选择：
+  - DAT340（应用机器学习）
+  - DAT565（数据科学与AI）
+  - MVE441（大数据统计学习）
+  
+**阶段3（专业化）**：选择：
+  - TDA234（深度学习） (Software Engineering)**
 
 **(English)**  
-"**Scenario**: *'What is DAT110 about? Tell me the learning outcomes, prerequisites, and assessment methods.'*
+"**Scenario**: *'What is TDA567 (Testing and Debugging) about? Tell me the learning outcomes, prerequisites, and assessment methods.'*
 
 **System Response** ⚠️:
-*'I don't have enough information about DAT110 in the provided context. Please check the official Chalmers University website.'*
+*'I don't have enough detailed information about TDA567's specific learning outcomes in the provided context. However, I can confirm it's about software testing and debugging techniques. For complete details, please check the official Chalmers University website.'*
+
+**Why This Is Good**: The system **honestly admits** when it lacks sufficient information instead of hallucinating fake details. This builds user trust."
+
+**(中文)**  
+"**场景**：*"TDA567（测试与调试）是关于什么的？告诉我学习成果、先修要求和考核方法。"*
+
+**系统回答** ⚠️：
+*"我没有足够的关于TDA567具体学习成果的详细信息。但我可以确认它是关于软件测试和调试技术的。完整详情h information about DAT110 in the provided context. Please check the official Chalmers University website.'*
 
 **Why This Is Good**: The system **honestly admits** when it lacks sufficient information instead of hallucinating fake details. This builds user trust."
 
