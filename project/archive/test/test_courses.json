@@ -1,0 +1,50 @@
+[
+  {
+    "courseName": "Examensarbete vid Biologi och bioteknik",
+    "primaryCourseCode": "BBTX02",
+    "alternativeCodes": [],
+    "allCodes": [
+      "BBTX02"
+    ],
+    "programShort": "TIKEL",
+    "programLong": "KEMITEKNIK, HÖGSKOLEINGENJÖR",
+    "passRate": 100,
+    "averageGrade": 0,
+    "totalPass": 13,
+    "totalFail": 0,
+    "total": 13
+  },
+  {
+    "courseName": "Ekonomi & organisation",
+    "primaryCourseCode": "LMU450",
+    "alternativeCodes": [],
+    "allCodes": [
+      "LMU450"
+    ],
+    "programShort": "TIELL",
+    "programLong": "ELEKTROTEKNIK, HÖGSKOLEINGENJÖR",
+    "passRate": 65.98,
+    "averageGrade": 3.41,
+    "totalPass": 1210,
+    "totalFail": 624,
+    "total": 1834
+  },
+  {
+    "courseName": "Databaser",
+    "primaryCourseCode": "TDA357",
+    "alternativeCodes": [
+      "TDA356"
+    ],
+    "allCodes": [
+      "TDA357",
+      "TDA356"
+    ],
+    "programShort": "TKITE",
+    "programLong": "INFORMATIONSTEKNIK, CIVILINGENJÖR",
+    "passRate": 67.01,
+    "averageGrade": 3.71,
+    "totalPass": 3145,
+    "totalFail": 1548,
+    "total": 4693
+  }
+]

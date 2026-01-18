@@ -12,39 +12,47 @@ A Retrieval-Augmented Generation (RAG) system for querying Chalmers University c
 
 ```
 nlp/project/
-├── data/                   # Course data (1,122 courses, 114MB JSON)
-├── src/                    # Source code
-│   ├── build_vector_db.py           # Build vector database
-│   ├── rag_query_system_gemini.py   # Gemini API RAG system (recommended)
-│   ├── rag_query_system_local.py    # Local Mistral model
-│   ├── rag_query_system_openai.py   # OpenAI API RAG system
-│   ├── syllabus_scraper.py          # Course scraper
-│   └── deduplicate_courses.py       # Data deduplication
-├── scripts/                # Shell scripts to run systems
-│   ├── run_build_db.sh              # Build vector DB (SLURM)
-│   ├── run_rag_gemini.sh            # Run Gemini RAG (SLURM)
-│   ├── run_rag_local.sh             # Run local model (SLURM)
-│   └── run_rag_openai.sh            # Run OpenAI RAG (SLURM)
-├── tests/                  # Test scripts
-│   ├── run_full_test.py             # Comprehensive test suite
-│   ├── test_rag_batch_gemini.py     # Gemini batch tests
-│   └── test_rag_setup.py            # Setup verification
-├── test_results/           # Test reports and logs
-│   ├── TEST_RESULTS_README.md       # Results overview
-│   ├── TEST_REPORT_GEMINI_IMPROVED.md  # Detailed analysis
-│   └── *.json, *.log                # Test data
-├── docs/                   # Documentation
-│   ├── PROJECT_INTRODUCTION.txt     # Complete overview (598 lines)
-│   ├── GEMINI_GUIDE.md              # Gemini setup and usage
-│   ├── LOCAL_MODEL_GUIDE.md         # Local model guide
-│   └── MODEL_COMPARISON.md          # Model performance comparison
-├── requirements/           # Python dependencies
-│   ├── requirements_gemini.txt      # For Gemini version
-│   ├── requirements_local.txt       # For local model
-│   └── requirements_openai.txt      # For OpenAI version
-├── chalmers_chroma_db/     # Vector database (14GB, ~8,500 chunks)
-├── logs/                   # SLURM job logs
-└── archive/                # Old/backup files
+├── 📦 SUBMISSION FILES (DAT450/DIT247 Course Project)
+│   ├── submission/                  # Final submission package
+│   │   ├── code_submission.zip      # Code package (51KB) ⭐
+│   │   ├── code_submission.tar.gz   # Alternative format
+│   │   ├── report.tex               # ACL format report
+│   │   └── *.md                     # Submission documentation
+│   ├── code_submission/             # Clean code for submission
+│   │   ├── src/                     # 6 Python source files
+│   │   ├── tests/                   # 4 test scripts
+│   │   ├── requirements/            # Dependencies
+│   │   └── README.md                # How to run
+│   └── presentation/                # Presentation materials
+│       ├── PRESENTATION_SCRIPT.md   # Presentation slides
+│       ├── test_case_*.png          # Demo screenshots (5 images)
+│       └── presentation_demo.py     # Live demo script
+│
+├── 🔬 CORE SYSTEM
+│   ├── src/                         # Source code
+│   │   ├── build_vector_db.py       # Vector database builder
+│   │   ├── rag_query_system_gemini.py   # Gemini API (recommended)
+│   │   ├── rag_query_system_openai.py   # OpenAI API
+│   │   ├── rag_query_system_local.py    # Local Mistral model
+│   │   ├── syllabus_scraper.py      # Course data scraper
+│   │   └── deduplicate_courses.py   # Data preprocessing
+│   ├── scripts/                     # SLURM job scripts
+│   ├── tests/                       # Test suite
+│   └── requirements/                # Python dependencies
+│
+├── 📊 DATA & RESULTS
+│   ├── data/                        # Course data (1,122 courses)
+│   ├── chalmers_chroma_db/          # Vector database (14GB)
+│   ├── test_results/                # Evaluation results
+│   └── logs/                        # SLURM logs
+│
+├── 📚 DOCUMENTATION
+│   ├── docs/                        # Technical documentation
+│   ├── demo_tests/                  # Demo test files
+│   ├── archived_docs/               # Old documentation
+│   └── archive/                     # Historical files
+│
+└── README.md                        # This file
 ```
 
 ## 🎯 Features

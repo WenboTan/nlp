@@ -1,0 +1,298 @@
+/data/users/wenbota/nlp/project/src/rag_query_system_gemini.py:49: LangChainDeprecationWarning: The class `HuggingFaceEmbeddings` was deprecated in LangChain 0.2.2 and will be removed in 1.0. An updated version of the class exists in the `langchain-huggingface package and should be used instead. To use it run `pip install -U `langchain-huggingface` and import as `from `langchain_huggingface import HuggingFaceEmbeddings``.
+  embeddings = HuggingFaceEmbeddings(
+/data/users/wenbota/nlp/project/src/rag_query_system_gemini.py:55: LangChainDeprecationWarning: The class `Chroma` was deprecated in LangChain 0.2.9 and will be removed in 1.0. An updated version of the class exists in the `langchain-chroma package and should be used instead. To use it run `pip install -U `langchain-chroma` and import as `from `langchain_chroma import Chroma``.
+  vectorstore = Chroma(
+
+================================================================================
+📚 Chalmers Course RAG System - Hardware Courses Demo
+================================================================================
+
+🔧 Loading RAG system...
+Loading vector database from ./chalmers_chroma_db...
+✓ Vector store loaded
+
+======================================================================
+Using Google Gemini Model: gemini-2.5-flash
+API Key: AIzaSyD1gD...msPw
+======================================================================
+
+✅ System ready!
+
+
+================================================================================
+🎯 场景 1: 学生想学习 FPGA 设计
+💡 演示重点: 课程推荐 + 先修课程关系
+================================================================================
+
+❓ Question:
+I want to learn FPGA design. What courses should I take and in what order?
+
+--------------------------------------------------------------------------------
+💬 Answer:
+To learn FPGA design at Chalmers, you should consider the following courses, ideally in this order:
+
+### Recommended Courses for FPGA Design:
+
+1.  **Foundational Digital/Electronic Systems (Choose one):**
+    *   **EDA322 Digital Design**
+        *   **Credits:** 7.5
+        *   **Prerequisites:** A preparatory course in Fundamentals of digital systems and computers.
+        *   **Focus:** Gives fundamental knowledge about analysis, synthesis, and optimization of combinatorial and sequential digital circuits, and introduces hardware description languages (VHDL) and FPGA technology.
+        *   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EDA322/?acYear=2025%2F2026
+        *   **Schedule Block:** Information for the schedule block is not clearly available in the provided context.
+    *   **SSY011 Electronic systems**
+        *   **Credits:** 7.5
+        *   **Prerequisites:** Knowledge corresponding to the courses LEU470 Electrical Circuits, SEE035 Electricity and Electronics, and LEU432 Introduction to Computer Engineering.
+        *   **Focus:** Provides knowledge about methods and tools for analysis and design of analog and digital electronics, including VHDL code simulation and synthesis in an FPGA circuit.
+        *   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/SSY011/?acYear=2025%2F2026
+        *   **Schedule Block:** Information for the schedule block is not clearly available in the provided context.
+
+2.  **Project-Oriented Digital System Design:**
+    *   **EDA234**
+        *   **Credits:** 7.5
+        *   **Prerequisites:** Fundamentals of Digital Systems and Computer Engineering, Electronics, and Computer Software Programming. It *recommends* EDA322 Digital Design or SSY011 Electronic systems as prerequisites.
+        *   **Focus:** This is a project-oriented course where students design, implement, test, and evaluate a complex digital system, including using FPGA and ASIC technology platforms.
+        *   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EDA234/?acYear=2025%2F2026
+        *   **Schedule Block:** C+
+
+3.  **Advanced Reconfigurable Computing:**
+    *   **DAT480**
+        *   **Credits:** 7.5
+        *   **Prerequisites:** Introduction to Computer Engineering (at least 7.5 credits); and one of the following courses: Discrete mathematics and/or Mathematical statistics and/or Probability theory and/or Algorithms and/or Data structures (at least 7.5 credits).
+        *   **Focus:** Introduces the field of Reconfigurable Computing, covering theoretical trends and practical experience with reconfigurable technology, including advanced topics in architectures, programming paradigms, and design tools.
+        *   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/DAT480/?acYear=2025%2F2026
+        *   **Schedule Block:** B
+
+### Recommended Order and Schedule Considerations:
+
+*   **Step 1 (Foundation):** Start with either **EDA322** or **SSY011** to build a strong foundation in digital design and basic FPGA concepts. The schedule block for these courses is not explicitly stated in the provided context, so you would need to check the official course schedule for availability.
+*   **Step 2 (Practical Application):** After completing one of the foundational courses, take **EDA234** to gain practical, project-based experience in digital system design using FPGAs.
+    *   **Schedule Block:** C+
+*   **Step 3 (Advanced Topics):** For a deeper understanding of reconfigurable computing and advanced FPGA topics, **DAT480** would be the next logical step.
+    *   **Schedule Block:** B
+
+**Schedule Conflict Detection:**
+Since EDA234 is in "Block C+" and DAT480 is in "Block B", there is **no direct time conflict** between these two courses, meaning you could potentially take them in the same study period if your foundational courses are already completed.
+
+**Important Note:** The schedule block information for SSY011 and EDA322 was not clearly readable in the provided context. Please verify the current course schedules on the official Chalmers website for the most up-to-date information regarding these courses and their availability.
+
+
+================================================================================
+🎯 场景 2: 查询特定课程详情 (DAT110)
+💡 演示重点: 详细课程信息提取
+================================================================================
+
+❓ Question:
+What is DAT110 about? Tell me the learning outcomes, prerequisites, and assessment methods.
+
+--------------------------------------------------------------------------------
+✓ 找到课程 DAT110: 0 chunks
+💬 Answer:
+I don't have enough information about the course DAT110 in the provided context. Therefore, I cannot tell you its learning outcomes, prerequisites, or assessment methods.
+
+Please check the official Chalmers University website for details on DAT110.
+
+
+================================================================================
+🎯 场景 3: 课程对比
+💡 演示重点: 多课程比较分析
+================================================================================
+
+❓ Question:
+What's the difference between EDA234 and MCC093? Which one is more project-based?
+
+--------------------------------------------------------------------------------
+✓ 找到课程 EDA234: 5 chunks
+✓ 找到课程 MCC093: 5 chunks
+💬 Answer:
+Here's a comparison between EDA234 and MCC093 based on the provided context:
+
+**EDA234: Digital project laboratory**
+*   **Course Code:** EDA234
+*   **Title:** Digital project laboratory
+*   **Credits:** 7.5
+*   **Language:** Unknown
+*   **Schedule Block:** C+
+*   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EDA234/?acYear=2025%2F2026
+*   **Prerequisites:** Fundamentals of Digital Systems and Computer Engineering, Electronics, and Computer Software Programming. It is recommended to have taken EDA322 Digital Design or SSY011 Electronic systems.
+*   **Description:** This is a project-oriented course where student groups develop, implement, test, and evaluate a relatively complex digital system over a six-week period. It focuses on practical knowledge and familiarization with CAD/EDA tools.
+*   **Examination:** Continuous assessment including laboratory exercises, weekly meetings, log book examination, assessment of the final product and report, and an oral presentation. The grade is based on the project group's performance and individual contributions.
+
+**MCC093: Introduction to integrated circuit design**
+*   **Course Code:** MCC093
+*   **Title:** Introduction to integrated circuit design
+*   **Credits:** 7.5
+*   **Language:** Unknown
+*   **Schedule Block:** The schedule block information for MCC093 is not clearly provided in the context (it appears as a long string of page properties).
+*   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/MCC093/?acYear=2025%2F2026
+*   **Prerequisites:** Basic knowledge about electric circuit theory, analog and digital electronics, logic design, and computer organization, along with the ability to perform engineering calculations.
+*   **Description:** This course introduces students to CMOS integrated circuit design and provides introductory training in industrial Electronic Design Automation (EDA) tools. It covers circuit design flow, MOSFETs, static and dynamic properties of CMOS inverters, logic gates, critical path delays, basic layout, adders, interconnect, wire delay, latches, flip-flops, and power consumption.
+*   **Examination:** Consists of compulsory laboratory exercises, compulsory weekly home assignment hand-in problems, and a final written examination. 50% of the points in the written examination are required to pass.
+
+---
+
+**Differences and Project-based Nature:**
+
+*   **Focus:**
+    *   **EDA234** is explicitly a "project-oriented course" centered around developing and implementing a complete digital system.
+    *   **MCC093** is an "introduction" to integrated circuit design, focusing on theoretical concepts and "introductory training" in EDA tools, with practical lab exercises supporting the learning.
+*   **Examination:**
+    *   **EDA234** has continuous assessment heavily weighted towards the project, including a final product and report.
+    *   **MCC093** includes compulsory lab exercises and assignments, but also has a significant "final written examination" component (50% to pass).
+
+**Which one is more project-based?**
+
+Based on the descriptions, **EDA234: Digital project laboratory** is clearly more project-based. Its entire structure and examination revolve around a substantial group project to design and implement a digital system. MCC093 has practical, hands-on elements with EDA tools and labs, but it's framed as an introduction and training, with a traditional written exam playing a key role in grading.
+
+
+================================================================================
+🎯 场景 4: 时间冲突检查
+💡 演示重点: Schedule 冲突检测
+================================================================================
+
+❓ Question:
+Can I take DAT110 and EDA234 in the same period? Check their schedule blocks.
+
+--------------------------------------------------------------------------------
+✓ 找到课程 DAT110: 5 chunks
+✓ 找到课程 EDA234: 5 chunks
+💬 Answer:
+Based on the schedule blocks, you can take DAT110 and EDA234 in the same period as they have different schedule blocks.
+
+Here's the information for each course:
+
+*   **DAT110 - Methods for electronic system design and verification**
+    *   **Schedule Block:** D+
+    *   **Credits:** 7.5
+    *   **Language:** English (from Document 3)
+    *   **Prerequisites:** Course specific, specifically "Introduction to integrated circuit design (MCC093)" (from Document 5). General entry requirements for Master's level.
+    *   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/DAT110/?acYear=2025%2F2026
+
+*   **EDA234 - Digital project laboratory**
+    *   **Schedule Block:** C+
+    *   **Credits:** 7.5
+    *   **Language:** English (from Document 8)
+    *   **Prerequisites:** Course specific, including "Fundamentals of Digital Systems and Computer Engineering, Electronics, and Computer Software Programming." Recommended prerequisites are EDA322 Digital Design or SSY011 Electronic systems (from Document 9). General entry requirements for bachelor's level.
+    *   **URL:** https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EDA234/?acYear=2025%2F2026
+
+Since DAT110 is in Block D+ and EDA234 is in Block C+, there is **no schedule conflict**, and you should be able to take them in the same period.
+
+
+================================================================================
+🎯 场景 5: 嵌入式系统课程路径
+💡 演示重点: 学习路径规划
+================================================================================
+
+❓ Question:
+I'm interested in embedded systems and want to work on real hardware projects. Recommend me a course sequence.
+
+--------------------------------------------------------------------------------
+💬 Answer:
+To help you build a strong foundation in embedded systems and gain practical experience with real hardware projects, here is a recommended course sequence based on the provided context:
+
+### Recommended Course Sequence for Embedded Systems and Hardware Projects
+
+**Phase 1: Foundational Embedded Programming**
+
+*   **EDA488: Machine oriented programming**
+    *   **Credits**: 6.0
+    *   **Schedule Block**: B
+    *   **Language**: Unknown (typically English for Master's level courses)
+    *   **Prerequisites**: Introductory courses in imperative programming and computer engineering.
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EDA488/?acYear=2025%2F2026
+    *   *Why this course?* This course is crucial as it provides insight into how imperative constructs translate to assembly code and addresses challenges in programming event-driven systems with multiple data sources, which is fundamental for embedded systems.
+
+**Phase 2: Core Real-Time Embedded Systems Concepts**
+
+After completing foundational programming, you can delve into real-time aspects. Note that EEN090 and LET627 are in the same schedule block, so you would typically choose one per study period. EDA223 is in a different block and could be taken in a separate period.
+
+*   **EEN090: Embedded control systems**
+    *   **Credits**: 7.5
+    *   **Schedule Block**: D
+    *   **Language**: Unknown (typically English for Master's level courses)
+    *   **Prerequisites**: Knowledge in computer organization (corresponding to courses like LEU432 Introduction to computer engineering) and machine-oriented programming (corresponding to DAT390/EDA488 Machine oriented programming), plus C programming (corresponding to LEU481 Computer programming).
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EEN090/?acYear=2025%2F2026
+    *   *Why this course?* Focuses on modeling, analysis, and implementation of embedded control systems, with emphasis on real-time functions in microcomputers and field-bus communication.
+
+*   **LET627: Introduction to real-time systems**
+    *   **Credits**: 7.5
+    *   **Schedule Block**: D
+    *   **Language**: Unknown (typically English for Master's level courses)
+    *   **Prerequisites**: A pass grade in the laboratory part of DAT390 Machine oriented programming (course module 0118) and a pass grade in the assignment part of LEU483 Computer programming (course module 0119). Knowledge in computer organization (corresponding to LEU432 Introduction to computer engineering).
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/LET627/?acYear=2025%2F2026
+    *   *Why this course?* Provides a general introduction to small embedded and distributed real-time systems, including C-program development for systems with CAN bus communication.
+    *   **Schedule Conflict**: EEN090 and LET627 are both in **Block D**, meaning they cannot be taken simultaneously.
+
+*   **EDA223: Real time systems**
+    *   **Credits**: 7.5
+    *   **Schedule Block**: B+
+    *   **Language**: Unknown (typically English for Master's level courses)
+    *   **Prerequisites**: Knowledge corresponding to a course in machine-oriented programming using the high-level language C. Courses in concurrent programming and operating systems are recommended.
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EDA223/?acYear=2025%2F2026
+    *   *Why this course?* Gives basic knowledge about methods for the design and analysis of real-time systems, including formulating requirements and understanding scheduling theory.
+    *   **Schedule Note**: This course is in **Block B+**, which means it would conflict with EDA488 (Block B) if taken in the same study period.
+
+**Phase 3: Hands-on Hardware Projects**
+
+These project-oriented courses offer practical experience. Note that DAT290, DAT096, and EDA234 are in conflicting blocks (C/C+), so you would typically choose one for a given study period.
+
+*   **DAT290: Computer science and engineering project**
+    *   **Credits**: 7.5
+    *   **Schedule Block**: C
+    *   **Language**: Unknown (typically English for Master's level courses)
+    *   **Prerequisites**: Completed courses in Introduction to Computer Engineering and Embedded Systems Programming.
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/DAT290/?acYear=2025%2F2026
+    *   *Why this course?* Aims to give you basic and general skills in heading and participating in technical development projects, with an emphasis on designing, integrating, and verifying hardware and software for processor-based systems.
+
+*   **DAT096: Embedded system design project**
+    *   **Credits**: 15.0
+    *   **Schedule Block**: C+
+    *   **Language**: Unknown
+    *   **Prerequisites**: A passing grade for DAT116 and the laboratory part of MCC093 (course element 0125). Lab exercises in DAT110 must be completed and all course reports of satisfactory quality. (Note: Specific prerequisites DAT116, MCC093, DAT110 are not detailed in the provided context.)
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/DAT096/?acYear=2025%2F2026
+    *   *Why this course?* This is a more extensive project course (15 credits) where student groups design a complete embedded electronic system, spanning from embedded software to technology platforms like FPGAs and ASICs.
+
+*   **EDA234: Digital system design project**
+    *   **Credits**: 7.5
+    *   **Schedule Block**: C+
+    *   **Language**: Unknown (typically English for Master's level courses)
+    *   **Prerequisites**: Fundamentals of Digital Systems and Computer Engineering, Electronics, and Computer Software Programming. Recommended: EDA322 Digital Design, or SSY011 Electronic systems.
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/EDA234/?acYear=2025%2F2026
+    *   *Why this course?* A project-oriented course where students develop, implement, test, and evaluate a hardware architecture for a complex digital system.
+    *   **Schedule Conflict**: DAT290, DAT096, and EDA234 are all in **Block C/C+**, meaning they generally cannot be taken simultaneously. You would typically select one of these project courses per study period.
+
+**Optional Introductory Course (Broader Mechatronics)**
+
+*   **SSY300: Applied mechatronics**
+    *   **Credits**: 6.0
+    *   **Schedule Block**: D
+    *   **Language**: Unknown (typically English for Master's level courses)
+    *   **Prerequisites**: Basic Mathematics courses and mechanics.
+    *   **URL**: https://www.chalmers.se/en/education/your-studies/find-course-and-programme-syllabi/course-syllabus/SSY300/?acYear=2025%2F2026
+    *   *Why this course?* Provides an introduction to mechatronics, covering the integration of sensors, actuators, and computers with mechanical systems, including microcontrollers and C programming. This could be a good starting point if you want a broader mechatronics perspective before diving deep into embedded software.
+
+**Summary of a possible sequence:**
+
+1.  **EDA488** (Machine oriented programming)
+2.  Choose between **EEN090** (Embedded control systems) or **LET627** (Introduction to real-time systems). You could also take **EDA223** (Real time systems) in a separate period.
+3.  Choose one of the project courses: **DAT290**, **DAT096**, or **EDA234** for hands-on hardware experience.
+
+Remember to always check the official Chalmers course website for the most up-to-date information on prerequisites, schedule, and course content for your specific academic year.
+
+
+================================================================================
+📊 Demo Summary
+================================================================================
+✅ Successful: 5/5
+❌ Failed: 0/5
+
+🎓 System Capabilities Demonstrated:
+  ✓ Course recommendation based on topics
+  ✓ Detailed course information extraction
+  ✓ Multi-course comparison
+  ✓ Schedule conflict detection
+  ✓ Learning path planning
+
+📈 Presentation Readiness Assessment:
+  🌟 EXCELLENT - System is fully ready for presentation!
+  💪 All key features working perfectly

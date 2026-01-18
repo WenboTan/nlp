@@ -1,0 +1,33 @@
+根据检索结果，以下是 Q3/LP3 学期的 AI 相关课程：
+
+=== Q3/LP3 的 AI/机器学习课程 ===
+
+未找到明确标注为 Q3 的 AI/ML 课程，但以下是所有 AI 相关课程（按 Block 分组）：
+
+**Block A (可能包含 Q3):**
+- DAT450: Machine learning for natural language processing (7.5 学分)
+- DAT530: Research-oriented course in data science and AI (7.5 学分)  
+- EEN100: Statistics and machine learning in high dimensions (7.5 学分)
+
+**Block B (可能包含 Q3):**
+- DAT441: Advanced topics in machine learning (7.5 学分)
+- DAT341: Applied machine learning (7.5 学分)
+- TDA233: Algorithms for machine learning and inference (7.5 学分)
+- FFR135: Artificial neural networks (7.5 学分)
+- MVE155: Statistical inference (7.5 学分)
+- TRA385: Machine learning and AI through artistic innovation (7.5 学分)
+
+**Block C/C+ (可能包含 Q3):**
+- DAT695: Introduction to data science (7.5 学分)
+- DAT566: Introduction to data science and AI (7.5 学分)
+- TIF285: Learning from data (7.5 学分)
+
+**Block D (可能包含 Q3):**
+- DAT625: Structured machine learning (7.5 学分)
+- TIF360: Advanced machine learning with neural networks (7.5 学分)
+- TRA235: Data-driven product realization (7.5 学分)
+
+**注意**：数据库中的 Study Period (LP1/LP2/LP3/LP4) 信息大多显示为 "Unknown"，
+因此无法准确确定哪些课程在 Q3 开设。建议查看官方课程页面确认具体学期。
+
+关于通过率：数据库中没有包含课程通过率数据。
